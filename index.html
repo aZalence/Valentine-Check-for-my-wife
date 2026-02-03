@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Will You Be My Valentine? ❤️</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+      color: #333;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      font-size: 3.8rem;
+      margin: 0.4em 0 0.8em;
+      color: #c62828;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      animation: pulse 2.5s infinite;
+    }
+
+    .buttons {
+      position: relative;
+      width: 360px;
+      height: 140px;
+    }
+
+    button {
+      position: absolute;
+      font-size: 1.9rem;
+      padding: 18px 48px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      transition: all 0.15s;
+      user-select: none;
+    }
+
+    #yesBtn {
+      background: #e91e63;
+      color: white;
+      left: 20px;
+      top: 40px;
+      z-index: 10;
+    }
+
+    #yesBtn:hover {
+      transform: scale(1.12);
+      background: #d81b60;
+    }
+
+    #noBtn {
+      background: #757575;
+      color: white;
+      left: 180px;
+      top: 40px;
+    }
+
+    .heart {
+      color: #e91e63;
+      font-size: 1.4em;
+      margin-left: 8px;
+    }
+
+    #success {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 4.5rem;
+      text-align: center;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      z-index: 100;
+    }
+
+    #success h2 {
+      margin: 0.2em 0 0.4em;
+      font-size: 5.2rem;
+    }
+
+    #success .small {
+      font-size: 2.2rem;
+      opacity: 0.95;
+    }
+
+    .floating-heart {
+      position: absolute;
+      font-size: 3rem;
+      color: white;
+      opacity: 0.7;
+      pointer-events: none;
+      animation: float 8s infinite linear;
+    }
+
+    @keyframes pulse {
+      0%,100% { transform: scale(1); }
+      50%     { transform: scale(1.06); }
+    }
+
+    @keyframes float {
+      0%   { transform: translateY(100vh) rotate(0deg); opacity: 0.6; }
+      100% { transform: translateY(-150px) rotate(360deg); opacity: 0; }
+    }
+
+    @media (max-width: 500px) {
+      h1 { font-size: 2.8rem; }
+      button { font-size: 1.5rem; padding: 14px 36px; }
+      #success h2 { font-size: 3.8rem; }
+      #success .small { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Will you be my Valentine? ❤️</h1>
+
+  <div class="buttons">
+    <button id="yesBtn">Yes 💖</button>
+    <button id="noBtn">No 😭</button>
+  </div>
+
+  <div id="success">
+    <h2>OMG SHE SAID YES!!</h2>
+    <div class="small">I love you so much my forever Valentine 💕</div>
+  </div>
+
+<script>
+// ────────────────────────────────────────────────
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const success = document.getElementById("success");
+
+let moveCount = 0;
+let noBtnLocked = false;
+let panicMode = false;
+
+function getRandomPos() {
+  const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+  const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+
+  const maxX = vw - 200;
+  const maxY = vh - 180;
+
+  return {
+    x: Math.random() * maxX,
+    y: Math.random() * maxY
+  };
+}
+
+function moveNoButton(fast = false) {
+  if (noBtnLocked) return;
+
+  const pos = getRandomPos();
+  noBtn.style.left = pos.x + "px";
+  noBtn.style.top  = pos.y + "px";
+  noBtn.style.transition = fast ? "all 0.18s" : "all 0.6s";
+
+  moveCount++;
+
+  // After ~5-8 moves → panic mode (very fast & chaotic)
+  if (moveCount >= 6) {
+    panicMode = true;
+    noBtn.style.transition = "all 0.12s";
+    noBtn.style.transform = "scale(1.15)";
+    noBtn.style.boxShadow = "0 0 30px #ff1744";
+  }
+}
+
+function createFloatingHeart() {
+  const heart = document.createElement("div");
+  heart.className = "floating-heart";
+  heart.textContent = ["❤️","💗","💖","💘","💕"][Math.floor(Math.random()*5)];
+  heart.style.left = Math.random() * 100 + "vw";
+  heart.style.animationDuration = (6 + Math.random()*6) + "s";
+  heart.style.animationDelay = Math.random() * 2 + "s";
+  document.body.appendChild(heart);
+
+  setTimeout(() => heart.remove(), 14000);
+}
+
+noBtn.addEventListener("mouseover", () => {
+  if (!noBtnLocked) moveNoButton();
+});
+
+noBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  if (noBtnLocked) return;
+
+  // Fake "Are you sure?" moment
+  noBtn.textContent = "Are you sure? 😢";
+  noBtn.style.background = "#d32f2f";
+  noBtn.style.transform = "scale(1.3)";
+
+  setTimeout(() => {
+    moveNoButton(true); // teleport instantly
+    noBtn.textContent = "No 😭";
+    noBtn.style.background = "#757575";
+    noBtn.style.transform = "scale(1)";
+  }, 1200);
+});
+
+yesBtn.addEventListener("click", () => {
+  noBtnLocked = true;
+  noBtn.style.display = "none";
+
+  success.style.display = "flex";
+
+  // Heart explosion
+  for (let i = 0; i < 35; i++) {
+    setTimeout(createFloatingHeart, i * 120);
+  }
+
+  // Keep spawning hearts forever <3
+  setInterval(createFloatingHeart, 800);
+});
+
+// After 2 seconds → start trolling
+setTimeout(() => {
+  const interval = setInterval(() => {
+    if (!noBtnLocked && !panicMode) {
+      moveNoButton();
+    }
+  }, 2200);
+
+  // Even more evil: every 8 seconds force-move even if mouse not over
+  setInterval(() => {
+    if (!noBtnLocked) moveNoButton(true);
+  }, 8000);
+}, 2000);
+
+</script>
+</body>
+</html>
